@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Instructor List and  Batch</h2>
+        
+    </div>
+    <!-- Button to trigger modal for adding user -->
+    <div class="button-container">
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addUserModal">
+            Add User
+        </button>
+    </div>
+
+    {% if messages %}
+    <div class="alert mt-2 {% for message in messages %}{% if message.tags == 'error' %}alert-danger{% else %}alert-success{% endif %}{% endfor %}  alert-outline fade show" role="alert">
+        {% for message in messages %}
+        <strong {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</strong>
+       
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Table -->
+        <table class="table custom-table mt-4">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">First Name</th>
+                    <th scope="col">Last Name</th>
+                    <th scope="col">Email</th>
+                    <th scope="col">Contact</th>
+                    <th scope="col">Actions</th> <!-- New column for action buttons -->
+                </tr>
+            </thead>
+            <tbody>
+                {% for instructor in instructors %}
+                    <tr>
+                        <th scope="row">{{ forloop.counter }}</th>
+                        <td>{{ instructor.first_name }}</td>
+                        <td>{{ instructor.last_name }}</td>
+                        <td>{{ instructor.email }}</td>
+                        <td>{{ instructor.contact }}</td>
+                        <td>
+                            <button type="button" class="btn btn-secondary btn-sm" data-bs-toggle="modal" data-bs-target="#assignBatchModal{{forloop.counter}}">
+                                Assign Batch
+                            </button>
+                        </td>
+                    </tr>
+
+                    <!-- Modal for assigning a batch to the instructor -->
+                    <div class="modal fade" id="assignBatchModal{{forloop.counter}}" tabindex="-1" role="dialog" aria-labelledby="assignBatchModalLabel" aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="assignBatchModalLabel">Assign Batch to {{ instructor.first_name }} {{ instructor.last_name }}</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <!-- Form fields for assigning a batch -->
+                                    <form id="assignBatchForm" method="post" action="{% url 'assign_lecture' %}">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="instructor_id" value="{{ instructor.id }}">
+                                        
+                                        <!-- Select dropdown for selecting a batch -->
+                                        <div class="mb-3">
+                                            <label for="batch" class="form-label">Select Batch</label>
+                                            <select class="form-select" name="batch_id" required>
+                                                {% for batch in batches %}
+                                                    <option value="{{ batch.id }}">{{ batch.batch_name }}-{{batch.course.name}}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+
+                                        <!-- Date input for assignment date -->
+                                        <div class="mb-3">
+                                            <label for="assignmentDate" class="form-label">Assignment Date</label>
+                                            <input type="date" class="form-control" id="assignmentDate" name="date" required>
+                                        </div>
+
+                                        <button type="submit" class="btn btn-primary">Assign Batch</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                {% endfor %}
+            </tbody>
+        </table>
+
+</div>
+
+<!-- Modal for adding user -->
+<div class="modal fade" id="addUserModal" tabindex="-1" role="dialog" aria-labelledby="addUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addUserModalLabel">Add User</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Form fields for adding users -->
+                <form method="post" action="{% url 'instructors' %}">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="name" class="form-label">First Name</label>
+                        <input type="text" class="form-control" id="name" name="first_name">
+                    </div>
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Last Name</label>
+                        <input type="text" class="form-control" id="name" name="last_name">
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="email" name="email">
+                    </div>
+                    <div class="mb-3">
+                        <label for="contact" class="form-label">Contact</label>
+                        <input type="text" class="form-control" id="contact" name="contact">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+{% endblock content %}

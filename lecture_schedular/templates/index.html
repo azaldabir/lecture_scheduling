@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container mt-5">
+    <h2>Lecture List</h2>
+
+    <!-- Table to display lecture information -->
+    <table class="table mt-4">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Date</th>
+                <th scope="col">Instructor</th>
+                <th scope="col">Course Name</th>
+                <th scope="col">Batch Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for lecture in lectures %}
+                <tr>
+                    <th scope="row">{{ forloop.counter }}</th>
+                    <td>{{ lecture.date }}</td>
+                    <td>{{ lecture.instructor.first_name }} {{ lecture.instructor.last_name }}</td>
+                    <td>{{ lecture.batch.course.name }}</td>
+                    <td>{{ lecture.batch.batch_name }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock content %}
